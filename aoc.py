@@ -1,59 +1,42 @@
-m = [] 
+G = []
 with open("input.txt", "r") as f:
-    lines = f.readlines()
-    for line in lines:
-        m.append(line.replace("\n", ""))
+    rows = f.readlines()
+    for row in rows:
+        G.append(row.strip())
 
-print(m)
-R = len(m)
-C = len(m[0])    
-antennas = set()
-for r in range(R):
-    for c in range(C):
-        if m[r][c].isalnum():
-            antennas.add((m[r][c], r , c))
+directions = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
+R = len(G)
+C = len(G[0])
 
-antennas = sorted(antennas, key=lambda a: (a[1], a[2]))
-print(antennas)     
+score = 0
+for o_r in range(R):
+    for o_c in range(C):
+        if int(G[o_r][o_c]) == 0:
+            
+            r, c = o_r, o_c
+            paths = set((0, r, c))
+            
+            for i in range(1, 10):  
+                found = False         
+                for path in paths:                                     
+                    for d in range(4):
+                        rr = r + directions[d][0]
+                        cc = c + directions[d][1]
+                        if (0 <= rr < R and 0 <= cc < C):
+                            if int(G[rr][cc]) == i and found == False:
+                                found = True
+                                paths = set()
+                                paths.add((i, rr, cc)) 
+                            elif int(G[rr][cc]) == i and found == True:
+                                paths.add((i, rr, cc)) 
 
-marked = set()
-for i , (aa, rr, cc) in enumerate(antennas):
-    o_c = cc
-    o_r = rr
-    for (a, r, c) in antennas[i+ 1:]:
-        if aa != a:
-            continue
-        cc = o_c
-        rr = o_r
-
-        dr = r- rr
-        dc = c - cc
-
-        adr = abs(dr)
-        adc = abs(dc)
-        if dc > 0:
-            while (0 <= rr < R and 0 <= cc < C):
-                marked.add((rr, cc))
-                rr -= adr
-                cc -= adc
-
-            while (0 <= r < R and 0 <= c < C):
-                marked.add((r , c))
-                r += adr
-                c += adc
-
-        else:
-            while (0 <= rr < R and 0 <= cc < C):
-                marked.add((rr, cc))
-                rr -= adr
-                cc += adc
-
-            while (0 <= r < R and 0 <= c < C):
-                marked.add((r , c))
-                r += adr
-                c -= adc
+            for c in paths:
+                if c[0] == 9:
+                    score += 1
 
 
-print(len(marked))
-    
+print(score)
+
+
+            
